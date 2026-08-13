@@ -109,6 +109,8 @@
 
 ## Checkpoint B: Core learning
 
+**Status:** Complete. Evidence: `docs/verification/task8-critical-path-lab.md`.
+
 - Acceptance: Tasks 5–8 form an end-to-end library → topic → flow → lab journey with deterministic calculations.
 - Verify: `./gradlew :app:testDebugUnitTest :app:lintDebug :app:assembleDebug`.
 
@@ -173,6 +175,8 @@
 
 ## Task 13: Complete release-candidate gate
 
+**Status:** Complete. Evidence: `docs/verification/application-startup.md`.
+
 **Description:** Execute the complete verification matrix, document the runnable commands and fix only defects that block an approved success criterion.
 
 - Acceptance: All nine spec criteria have evidence; clean build/unit/lint/instrumented checks pass; API 36 cold launch has no crash or intentional main-thread blocking.
@@ -182,6 +186,8 @@
 - Estimated scope: Small (2 documentation files plus scoped fixes if required).
 
 ## Checkpoint D: Complete
+
+**Status:** Complete. Evidence: `docs/verification/application-startup.md`.
 
 - Acceptance: The approved Application Startup vertical slice is buildable, testable, accessible and source-backed.
 - Verify: Review `docs/verification/application-startup.md` against the spec traceability table.
