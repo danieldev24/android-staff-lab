@@ -55,7 +55,7 @@ Use the visual character of the references without copying their course, calenda
 
 | Android Staff Lab function | Visual treatment |
 |---|---|
-| Topic library | Track introduction, path summary, and editorial topic cards with explicit lesson metadata |
+| Topic library | Learning-path introduction, domain category panels, and nested topic entries with explicit lesson metadata |
 | Application Startup overview | Violet hero card, learning outcomes, four-lesson progress, and a fixed next action |
 | Cold/Warm/Hot modes | Rounded labeled pills; selection is expressed by fill, text, and semantics |
 | Five startup lanes | Horizontal labeled lane overview plus one selected stage detail |

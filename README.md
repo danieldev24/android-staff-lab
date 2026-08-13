@@ -47,7 +47,7 @@ adb -s emulator-5554 shell am start -W \
   -n com.krahs.androidstafflab/.MainActivity
 ```
 
-Open **Application startup** from the Topic Library. System back returns to the library.
+Open the **Android Platform** category, then choose **What happens when an Android application starts?** System back returns to the library.
 
 ## Reproduce the cold-launch smoke check
 

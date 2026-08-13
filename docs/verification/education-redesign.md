@@ -5,7 +5,7 @@ Device: Android Emulator, API 36, phone portrait
 
 ## Verified learning journey
 
-- Library presents the Foundation track, learning-path summary, lesson metadata, and a clear **Start lesson** action.
+- Library presents `Android Platform` as a category containing the “What happens when an Android application starts?” topic entry, lesson metadata, and a clear **Start lesson** action.
 - Application Startup is split into Overview, Flow, Lab, and Evidence with visible `1 / 4` progress.
 - Previous/Next actions remain fixed at the bottom while lesson content scrolls independently.
 - Flow exposes five execution lanes and nine stages, but only the selected stage expands into learning detail.
@@ -27,4 +27,3 @@ The final gate covers 12 API 36 instrumentation tests plus deterministic JVM tes
 - `artifacts/education-redesign-flow-api36.png`
 - `artifacts/education-redesign-evidence-api36.png`
 - `artifacts/education-redesign-font200-api36.png`
-

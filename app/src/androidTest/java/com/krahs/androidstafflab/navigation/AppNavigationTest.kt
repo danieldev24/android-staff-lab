@@ -23,6 +23,16 @@ class AppNavigationTest {
             .onNodeWithText("Android Staff Lab")
             .performScrollTo()
             .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithTag("topic-category-android-platform")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("Android Platform")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("What happens when an Android application starts?")
+            .performScrollTo()
+            .assertIsDisplayed()
 
         composeTestRule
             .onNodeWithTag("topic-card-application-startup")

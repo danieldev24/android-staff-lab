@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
@@ -36,7 +35,7 @@ import com.krahs.androidstafflab.ui.theme.AndroidStaffLabTheme
 
 @Composable
 fun TopicLibraryScreen(
-    topic: Topic,
+    category: TopicCategory,
     onTopicClick: (Topic) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -56,28 +55,9 @@ fun TopicLibraryScreen(
         ) {
             LibraryHeader()
             LibraryIntroduction()
-            TrackSummary()
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom,
-                ) {
-                    Text(
-                        modifier = Modifier.semantics { heading() },
-                        text = "Continue learning",
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Text(
-                        text = "1 topic",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.labelLarge,
-                    )
-                }
-                TopicCard(topic = topic, onClick = { onTopicClick(topic) })
-            }
+            CategorySection(category = category, onTopicClick = onTopicClick)
             Text(
-                text = "Next: Rendering, recomposition, state, and performance labs.",
+                text = "Next categories: App Architecture, UI Runtime, Data & Connectivity, and Performance.",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodyMedium,
             )
@@ -151,7 +131,7 @@ private fun LibraryMark() {
 @Composable
 private fun LibraryIntroduction() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        LabPill(label = "FOUNDATION TRACK")
+        LabPill(label = "STAFF LEARNING PATH")
         Text(
             modifier = Modifier.semantics { heading() },
             text = "Master Android from the inside out",
@@ -166,52 +146,65 @@ private fun LibraryIntroduction() {
 }
 
 @Composable
-private fun TrackSummary() {
-    val progressTrackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
-    val progressColor = MaterialTheme.colorScheme.primary
-
+private fun CategorySection(
+    category: TopicCategory,
+    onTopicClick: (Topic) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag("topic-category-${category.id}"),
         shape = MaterialTheme.shapes.large,
         color = MaterialTheme.colorScheme.primaryContainer,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ) {
-        Row(
-            modifier = Modifier.padding(20.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Box(
-                modifier = Modifier.size(64.dp),
-                contentAlignment = Alignment.Center,
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Canvas(modifier = Modifier.matchParentSize()) {
-                    drawCircle(color = progressTrackColor)
-                    drawArc(
-                        color = progressColor,
-                        startAngle = -90f,
-                        sweepAngle = 90f,
-                        useCenter = false,
-                        topLeft = Offset(4.dp.toPx(), 4.dp.toPx()),
-                        size = androidx.compose.ui.geometry.Size(
-                            width = size.width - 8.dp.toPx(),
-                            height = size.height - 8.dp.toPx(),
-                        ),
-                        style = androidx.compose.ui.graphics.drawscope.Stroke(5.dp.toPx()),
-                    )
-                }
-                Text(text = "01", style = MaterialTheme.typography.titleMedium)
+                LabIconBadge(
+                    symbol = category.symbol,
+                    color = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                )
+                LabPill(
+                    label = "${category.topics.size} ${if (category.topics.size == 1) "TOPIC" else "TOPICS"}",
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                )
             }
             Column(
-                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(text = "Your learning path", style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = "One foundation topic is ready. Complete four focused lessons at your own pace.",
+                    text = "CATEGORY ${category.sequence}",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelSmall,
+                )
+                Text(
+                    modifier = Modifier.semantics { heading() },
+                    text = category.title,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+                Text(
+                    text = category.summary,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f),
                     style = MaterialTheme.typography.bodyMedium,
                 )
+            }
+            Text(
+                text = "START HERE",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+            )
+            category.topics.forEach { topic ->
+                TopicCard(topic = topic, onClick = { onTopicClick(topic) })
             }
         }
     }
@@ -268,8 +261,10 @@ private fun TopicCard(
                         )
                     }
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(text = "FOUNDATION · SYSTEMS", style = MaterialTheme.typography.labelSmall)
-                        Text(text = topic.title, style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            text = "Entry ${topic.sequence} · ${topic.title}",
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                     }
                 } else {
                     Row(
@@ -283,8 +278,10 @@ private fun TopicCard(
                             contentColor = MaterialTheme.colorScheme.onSecondary,
                         )
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = "FOUNDATION · SYSTEMS", style = MaterialTheme.typography.labelSmall)
-                            Text(text = topic.title, style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                text = "Entry ${topic.sequence} · ${topic.title}",
+                                style = MaterialTheme.typography.labelSmall,
+                            )
                         }
                         LabPill(
                             label = "READY",
@@ -293,7 +290,11 @@ private fun TopicCard(
                         )
                     }
                 }
-                Text(text = topic.question, style = MaterialTheme.typography.titleMedium)
+                Text(
+                    modifier = Modifier.semantics { heading() },
+                    text = topic.question,
+                    style = MaterialTheme.typography.titleLarge,
+                )
                 Text(
                     text = topic.summary,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -329,6 +330,6 @@ private fun TopicCard(
 @Composable
 private fun TopicLibraryScreenPreview() {
     AndroidStaffLabTheme {
-        TopicLibraryScreen(topic = Topics.applicationStartup, onTopicClick = {})
+        TopicLibraryScreen(category = TopicCategories.androidPlatform, onTopicClick = {})
     }
 }

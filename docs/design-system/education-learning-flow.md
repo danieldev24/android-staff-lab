@@ -1,13 +1,19 @@
 # Education Learning Flow
 
 Status: Adopted  
-Scope: Application Startup topic and future Android Staff Lab topics
+Scope: Android Platform category, Application Startup topic, and future Android Staff Lab content
 
 ## Problem
 
 The original topic placed the mental model, nine-stage timeline, simulation, live evidence, and six staff caveats in one long document. The material was accurate, but a learner had to scroll through unrelated detail before reaching the next learning action.
 
 ## Course Structure
+
+The catalog uses a three-level hierarchy:
+
+1. **Category** groups a staff-level Android domain, such as Android Platform.
+2. **Topic entry** asks one concrete system question, such as “What happens when an Android application starts?”
+3. **Lessons** break that question into focused learning activities.
 
 Each topic is a short guided course with four lessons:
 
@@ -31,9 +37,9 @@ The lesson header communicates position and permits direct access. The fixed bot
 
 The library behaves like an education product rather than a technical menu:
 
-- Track-level introduction explains the learning promise.
-- A compact path summary communicates available progress.
-- Each topic card exposes level, readiness, lesson count, stage count, and interaction type before the learner enters.
+- A path-level introduction explains the learning promise.
+- A category panel establishes the Android domain and contains its related topic entries.
+- Each topic entry uses its system question as the headline and exposes readiness, lesson count, stage count, and interaction type.
 - The primary action uses an explicit learning verb: **Start lesson**.
 
 ## Typography Contract
@@ -54,4 +60,3 @@ At font scale 150% and above:
 - Evidence never renders the live log and all six caveat cards at the same time.
 - All lesson and evidence controls have at least a 48 dp target and semantic labels.
 - Default and 200% font-scale layouts contain no clipped instructional text.
-

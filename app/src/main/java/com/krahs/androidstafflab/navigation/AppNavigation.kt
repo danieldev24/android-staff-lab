@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.krahs.androidstafflab.feature.library.TopicLibraryScreen
+import com.krahs.androidstafflab.feature.library.TopicCategories
 import com.krahs.androidstafflab.feature.library.Topics
 import com.krahs.androidstafflab.feature.startup.ui.ApplicationStartupScreen
 import kotlinx.serialization.Serializable
@@ -30,7 +31,7 @@ fun AppNavigation(
     ) {
         composable<TopicLibraryRoute> {
             TopicLibraryScreen(
-                topic = Topics.applicationStartup,
+                category = TopicCategories.androidPlatform,
                 onTopicClick = { topic ->
                     navController.navigate(TopicDetailRoute(topic.id))
                 },
