@@ -21,7 +21,10 @@ class StartupEventLogUiTest {
 
     @Test
     fun topicScreen_showsSevenObservedEventsWithContextAndObserverCaveat() {
-        composeTestRule.onNodeWithTag("topic-card-application-startup").performClick()
+        composeTestRule
+            .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
+            .performClick()
         composeTestRule.onNodeWithTag("startup-lesson-evidence").performClick()
 
         composeTestRule

@@ -1,18 +1,23 @@
 package com.krahs.androidstafflab.feature.startup.ui
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
@@ -29,27 +34,44 @@ fun StaffNotes(
     onViewSources: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
+    val selectedNote = notes[selectedIndex]
+
     LabOrganicPanel(modifier = modifier.fillMaxWidth()) {
         LabSectionHeader(
             title = "Staff notes & caveats",
-            supportingLabel = "${notes.size} boundaries",
+            supportingLabel = "${selectedIndex + 1} / ${notes.size}",
         )
-        Spacer(modifier = Modifier.height(12.dp))
         Text(
-            text = "Các boundary dưới đây giữ mental model chính xác khi platform, entry point hoặc readiness definition thay đổi.",
+            modifier = Modifier.padding(top = 12.dp),
+            text = "Select one boundary at a time to keep the mental model precise.",
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.bodyLarge,
         )
-        Spacer(modifier = Modifier.height(18.dp))
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             notes.forEachIndexed { index, note ->
-                StaffNoteCard(
-                    index = index,
-                    note = note,
-                    onViewSources = { onViewSources(note.sourceIds) },
+                FilterChip(
+                    selected = selectedIndex == index,
+                    onClick = { selectedIndex = index },
+                    label = { Text((index + 1).toString().padStart(2, '0')) },
+                    modifier = Modifier
+                        .sizeIn(minHeight = 48.dp)
+                        .testTag("staff-note-selector-${note.id}"),
                 )
             }
         }
+        StaffNoteCard(
+            index = selectedIndex,
+            note = selectedNote,
+            onViewSources = { onViewSources(selectedNote.sourceIds) },
+            modifier = Modifier.padding(top = 12.dp),
+        )
     }
 }
 
@@ -70,27 +92,19 @@ private fun StaffNoteCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "${(index + 1).toString().padStart(2, '0')} / STAFF",
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-                Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .semantics { heading() },
-                    text = note.title,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
+            Text(
+                text = "${(index + 1).toString().padStart(2, '0')} / STAFF BOUNDARY",
+                color = MaterialTheme.colorScheme.primary,
+                style = MaterialTheme.typography.labelSmall,
+            )
+            Text(
+                modifier = Modifier.semantics { heading() },
+                text = note.title,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+            )
             Text(
                 text = note.body,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

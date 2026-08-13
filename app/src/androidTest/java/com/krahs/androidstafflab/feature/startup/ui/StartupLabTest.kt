@@ -63,6 +63,7 @@ class StartupLabTest {
             .assertIsDisplayed()
         composeTestRule
             .onNodeWithText("TTFD 780 ms")
+            .performScrollTo()
             .assertIsDisplayed()
 
         composeTestRule
@@ -83,6 +84,7 @@ class StartupLabTest {
     private fun openApplicationStartupTopic() {
         composeTestRule
             .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
             .performClick()
 
         composeTestRule

@@ -1,5 +1,6 @@
 package com.krahs.androidstafflab.feature.startup.ui
 
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.assertIsDisplayed
@@ -9,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.krahs.androidstafflab.MainActivity
 import org.junit.Rule
@@ -22,14 +24,21 @@ class StaffNotesTest {
 
     @Test
     fun staffNotes_exposeOfficialSourcesInAccessibleSheet() {
-        composeTestRule.onNodeWithTag("topic-card-application-startup").performClick()
+        composeTestRule
+            .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
+            .performClick()
         composeTestRule.onNodeWithTag("startup-lesson-evidence").performClick()
         composeTestRule.onNodeWithTag("startup-evidence-staff-notes").performClick()
 
         composeTestRule
             .onNodeWithText("Staff notes & caveats")
             .assertIsDisplayed()
-        composeTestRule.onAllNodesWithTag("staff-note").assertCountEquals(6)
+        composeTestRule.onAllNodesWithTag("staff-note").assertCountEquals(1)
+
+        composeTestRule
+            .onNodeWithTag("staff-note-selector-usap-is-conditional")
+            .performSemanticsAction(SemanticsActions.OnClick)
 
         composeTestRule
             .onNodeWithTag("staff-note-usap-is-conditional-sources")

@@ -77,6 +77,7 @@ class StartupFlowPlayerTest {
     private fun openApplicationStartupTopic() {
         composeTestRule
             .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
             .performClick()
 
         composeTestRule

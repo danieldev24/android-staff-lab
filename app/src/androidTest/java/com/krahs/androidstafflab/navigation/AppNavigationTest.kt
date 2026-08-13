@@ -5,6 +5,7 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.krahs.androidstafflab.MainActivity
 import org.junit.Rule
@@ -18,13 +19,14 @@ class AppNavigationTest {
 
     @Test
     fun applicationStartupTopic_opensDetail_andSystemBackReturnsToLibrary() {
-        // RED before Task 5: this first assertion failed because the app opened detail directly.
         composeTestRule
-            .onNodeWithText("Topic library")
+            .onNodeWithText("Android Staff Lab")
+            .performScrollTo()
             .assertIsDisplayed()
 
         composeTestRule
             .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
             .performClick()
 
         composeTestRule
@@ -37,7 +39,8 @@ class AppNavigationTest {
         composeTestRule.waitForIdle()
 
         composeTestRule
-            .onNodeWithText("Topic library")
+            .onNodeWithText("Android Staff Lab")
+            .performScrollTo()
             .assertIsDisplayed()
     }
 
@@ -45,6 +48,7 @@ class AppNavigationTest {
     fun applicationStartupLesson_progressesThroughFourShortChapters() {
         composeTestRule
             .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
             .performClick()
 
         composeTestRule.onNodeWithText("Build the mental model").assertIsDisplayed()

@@ -103,6 +103,7 @@ class StartupAccessibilityTest {
     private fun openApplicationStartupTopic() {
         composeTestRule
             .onNodeWithTag("topic-card-application-startup")
+            .performScrollTo()
             .performClick()
     }
 }
