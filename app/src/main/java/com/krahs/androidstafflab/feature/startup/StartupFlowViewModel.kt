@@ -5,6 +5,9 @@ import com.krahs.androidstafflab.feature.startup.content.StartupContent
 import com.krahs.androidstafflab.feature.startup.model.StartupFlowAction
 import com.krahs.androidstafflab.feature.startup.model.StartupFlowUiState
 import com.krahs.androidstafflab.feature.startup.model.StartupMode
+import com.krahs.androidstafflab.feature.startup.model.StartupSimulation
+import com.krahs.androidstafflab.feature.startup.model.StartupSimulationAction
+import com.krahs.androidstafflab.feature.startup.model.StartupSimulationState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,8 +19,33 @@ class StartupFlowViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(initialState())
     val uiState: StateFlow<StartupFlowUiState> = _uiState.asStateFlow()
 
+    private val _simulationState = MutableStateFlow(StartupSimulationState())
+    val simulationState: StateFlow<StartupSimulationState> = _simulationState.asStateFlow()
+
     fun onAction(action: StartupFlowAction) {
         _uiState.update { state -> reduce(state, action) }
+    }
+
+    fun onSimulationAction(action: StartupSimulationAction) {
+        _simulationState.update { state ->
+            when (action) {
+                is StartupSimulationAction.ToggleWorkload -> StartupSimulation.toggle(
+                    state = state,
+                    workloadId = action.workloadId,
+                )
+
+                StartupSimulationAction.Run -> state.copy(
+                    hasRun = true,
+                    showComparison = false,
+                )
+
+                StartupSimulationAction.ApplyStaffFixes -> state.copy(
+                    hasRun = true,
+                    showComparison = true,
+                )
+                StartupSimulationAction.Reset -> StartupSimulationState()
+            }
+        }
     }
 
     private fun reduce(
@@ -39,8 +67,8 @@ class StartupFlowViewModel : ViewModel() {
 
         StartupFlowAction.PlayPause -> when {
             state.isPlaying -> state.copy(isPlaying = false)
-            state.currentStageId == state.activeStageIds.last() -> state.copy(
-                currentStageId = state.activeStageIds.first(),
+            state.currentStageId == state.lastActiveStageId() -> state.copy(
+                currentStageId = state.firstActiveStageId(),
                 isPlaying = true,
             )
 
@@ -50,7 +78,7 @@ class StartupFlowViewModel : ViewModel() {
         StartupFlowAction.Previous -> state.moveBy(direction = -1)
         StartupFlowAction.Next -> state.moveBy(direction = 1)
         StartupFlowAction.Reset -> state.copy(
-            currentStageId = state.activeStageIds.first(),
+            currentStageId = state.firstActiveStageId(),
             isPlaying = false,
         )
 
@@ -103,7 +131,13 @@ class StartupFlowViewModel : ViewModel() {
 
         return copy(
             currentStageId = nextStageId,
-            isPlaying = nextStageId != activeStageIds.last(),
+            isPlaying = nextStageId != lastActiveStageId(),
         )
     }
+
+    private fun StartupFlowUiState.firstActiveStageId(): String =
+        orderedStageIds.first(activeStageIds::contains)
+
+    private fun StartupFlowUiState.lastActiveStageId(): String =
+        orderedStageIds.last(activeStageIds::contains)
 }
