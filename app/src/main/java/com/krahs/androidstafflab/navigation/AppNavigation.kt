@@ -7,9 +7,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.krahs.androidstafflab.ApplicationStartupScreen
 import com.krahs.androidstafflab.feature.library.TopicLibraryScreen
 import com.krahs.androidstafflab.feature.library.Topics
+import com.krahs.androidstafflab.feature.startup.ui.ApplicationStartupScreen
 import kotlinx.serialization.Serializable
 
 @Serializable
