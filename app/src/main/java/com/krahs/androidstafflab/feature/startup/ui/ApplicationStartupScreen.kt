@@ -22,9 +22,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -94,6 +97,10 @@ private fun ApplicationStartupContent(
     startupEvents: List<StartupEventRecord>,
     modifier: Modifier = Modifier,
 ) {
+    val uriHandler = LocalUriHandler.current
+    var selectedSourceIds by remember { mutableStateOf(emptyList<String>()) }
+    val selectedSources = selectedSourceIds.mapNotNull(StartupContent.sources::get)
+
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
@@ -140,6 +147,7 @@ private fun ApplicationStartupContent(
                     onStageSelected = { stageId ->
                         onFlowAction(StartupFlowAction.SelectStage(stageId))
                     },
+                    onViewSources = { sourceIds -> selectedSourceIds = sourceIds },
                 )
             }
             Spacer(modifier = Modifier.height(24.dp))
@@ -149,6 +157,11 @@ private fun ApplicationStartupContent(
             )
             Spacer(modifier = Modifier.height(24.dp))
             StartupEventLog(records = startupEvents)
+            Spacer(modifier = Modifier.height(24.dp))
+            StaffNotes(
+                notes = StartupContent.staffNotes,
+                onViewSources = { sourceIds -> selectedSourceIds = sourceIds },
+            )
             Spacer(modifier = Modifier.height(20.dp))
             LabPill(
                 label = "${flowState.mode.label.uppercase()} MODE · SOURCE-BACKED",
@@ -157,6 +170,13 @@ private fun ApplicationStartupContent(
             )
             Spacer(modifier = Modifier.height(12.dp))
         }
+    }
+    if (selectedSources.isNotEmpty()) {
+        SourceLinksSheet(
+            sources = selectedSources,
+            onDismiss = { selectedSourceIds = emptyList() },
+            onOpenSource = { source -> uriHandler.openUri(source.url) },
+        )
     }
 }
 

@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,7 @@ fun StartupTimeline(
     skippedStageIds: Set<String>,
     modeLabel: String,
     onStageSelected: (String) -> Unit,
+    onViewSources: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -61,6 +63,7 @@ fun StartupTimeline(
                     modeLabel = modeLabel,
                     showConnector = index < stages.lastIndex,
                     onClick = { onStageSelected(stage.id) },
+                    onViewSources = { onViewSources(stage.sourceIds) },
                 )
             }
         }
@@ -134,6 +137,7 @@ private fun StartupStageRow(
     modeLabel: String,
     showConnector: Boolean,
     onClick: () -> Unit,
+    onViewSources: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -233,7 +237,10 @@ private fun StartupStageRow(
                             body = stage.staffNote,
                             accentColor = MaterialTheme.colorScheme.secondary,
                         )
-                        SourceIds(sourceIds = stage.sourceIds)
+                        SourceIds(
+                            sourceIds = stage.sourceIds,
+                            onViewSources = onViewSources,
+                        )
                     }
                 }
             }
@@ -288,7 +295,10 @@ private fun LearningLayer(
 }
 
 @Composable
-private fun SourceIds(sourceIds: List<String>) {
+private fun SourceIds(
+    sourceIds: List<String>,
+    onViewSources: () -> Unit,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         Text(
             text = "Official source IDs",
@@ -301,6 +311,9 @@ private fun SourceIds(sourceIds: List<String>) {
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelSmall,
             )
+        }
+        TextButton(onClick = onViewSources) {
+            Text("Open official sources · ${sourceIds.size}")
         }
     }
 }

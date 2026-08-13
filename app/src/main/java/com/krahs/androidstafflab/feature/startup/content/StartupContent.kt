@@ -35,6 +35,14 @@ data class StartupStage(
     val sourceIds: List<String>,
 )
 
+@Immutable
+data class StaffNote(
+    val id: String,
+    val title: String,
+    val body: String,
+    val sourceIds: List<String>,
+)
+
 object StartupSourceIds {
     const val APP_STARTUP_TIME = "android-app-startup-time"
     const val ZYGOTE = "aosp-zygote"
@@ -44,6 +52,8 @@ object StartupSourceIds {
     const val ACTIVITY_LIFECYCLE = "android-activity-lifecycle"
     const val COMPOSE_PHASES = "compose-phases"
     const val APP_STARTUP_LIBRARY = "android-app-startup"
+    const val SYSTEM_CLOCK = "android-system-clock"
+    const val VIEW_TREE_OBSERVER = "android-view-tree-observer"
 }
 
 object StartupContent {
@@ -87,6 +97,16 @@ object StartupContent {
             id = StartupSourceIds.APP_STARTUP_LIBRARY,
             title = "App Startup",
             url = "https://developer.android.com/topic/libraries/app-startup",
+        ),
+        StartupSource(
+            id = StartupSourceIds.SYSTEM_CLOCK,
+            title = "SystemClock",
+            url = "https://developer.android.com/reference/android/os/SystemClock",
+        ),
+        StartupSource(
+            id = StartupSourceIds.VIEW_TREE_OBSERVER,
+            title = "ViewTreeObserver.OnDrawListener",
+            url = "https://developer.android.com/reference/android/view/ViewTreeObserver.OnDrawListener",
         ),
     ).associateBy(StartupSource::id)
 
@@ -214,6 +234,56 @@ object StartupContent {
         ),
     )
 
+    val staffNotes: List<StaffNote> = listOf(
+        StaffNote(
+            id = "entry-point-changes-flow",
+            title = "Entry point changes the trace",
+            body = "Launcher Activity chỉ là một startup path. Deep link, notification, service, receiver hoặc provider có thể tạo component path khác, vì vậy hãy ghi rõ trigger khi so sánh trace.",
+            sourceIds = listOf(StartupSourceIds.APP_STARTUP_TIME),
+        ),
+        StaffNote(
+            id = "usap-is-conditional",
+            title = "USAP is conditional",
+            body = "USAP pool không phải bước bắt buộc trên mọi device. Zygote có thể specialize một pooled USAP khi pool được bật, hoặc fork process theo nhu cầu.",
+            sourceIds = listOf(StartupSourceIds.ZYGOTE),
+        ),
+        StaffNote(
+            id = "provider-order-is-partial",
+            title = "Provider order is only partial",
+            body = "Manifest provider được tạo trước Application.onCreate(), nhưng không có thứ tự tổng quát giữa các provider độc lập. App Startup chỉ tạo dependency order cho các initializer đã khai báo quan hệ.",
+            sourceIds = listOf(
+                StartupSourceIds.APPLICATION_ON_CREATE,
+                StartupSourceIds.CONTENT_PROVIDER,
+                StartupSourceIds.APP_STARTUP_LIBRARY,
+            ),
+        ),
+        StaffNote(
+            id = "application-is-per-process",
+            title = "Application is per process",
+            body = "Components mặc định cùng chạy trong một process, nhưng manifest có thể tách process. Mỗi app process có lifecycle và Application instance riêng.",
+            sourceIds = listOf(
+                StartupSourceIds.PROCESSES_AND_THREADS,
+                StartupSourceIds.APPLICATION_ON_CREATE,
+            ),
+        ),
+        StaffNote(
+            id = "ttid-is-not-usable",
+            title = "TTID is not TTFD",
+            body = "First frame đánh dấu TTID nhưng không đồng nghĩa primary content đã usable. TTFD cần app signal fully drawn sau khi UI và dữ liệu cần thiết thực sự sẵn sàng.",
+            sourceIds = listOf(StartupSourceIds.APP_STARTUP_TIME),
+        ),
+        StaffNote(
+            id = "observed-frame-is-not-ttid",
+            title = "Observed frame is not a benchmark",
+            body = "Lab dùng elapsedRealtimeNanos monotonic và callback khi view tree sắp draw. Event này là observation có observer cost, không phải TTID do Android Framework report và không thay thế Macrobenchmark/Perfetto.",
+            sourceIds = listOf(
+                StartupSourceIds.SYSTEM_CLOCK,
+                StartupSourceIds.VIEW_TREE_OBSERVER,
+                StartupSourceIds.APP_STARTUP_TIME,
+            ),
+        ),
+    )
+
     init {
         require(coldStartStages.map(StartupStage::order) == (1..coldStartStages.size).toList()) {
             "Cold-start stages must stay in contiguous learning order."
@@ -223,6 +293,12 @@ object StartupContent {
         }
         require(coldStartStages.flatMap(StartupStage::sourceIds).all(sources::containsKey)) {
             "Every startup claim must resolve to a stable official source ID."
+        }
+        require(staffNotes.map(StaffNote::id).distinct().size == staffNotes.size) {
+            "Staff-note IDs must be unique."
+        }
+        require(staffNotes.all { note -> note.sourceIds.isNotEmpty() && note.sourceIds.all(sources::containsKey) }) {
+            "Every staff note must resolve to at least one official source ID."
         }
     }
 }

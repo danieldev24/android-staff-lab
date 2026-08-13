@@ -2,7 +2,7 @@
 
 Verified: 2026-08-13
 
-Task 6 uses stable source IDs in `StartupContent.kt`. These IDs are the contract between learning copy and the future source-link UI in Task 11.
+Tasks 6–11 use stable source IDs in `StartupContent.kt`. These IDs are the contract between learning copy, staff notes, runtime-observation caveats, and the source-link UI.
 
 | Stable ID | Official source | Claims used in the cold-start timeline |
 | --- | --- | --- |
@@ -14,6 +14,8 @@ Task 6 uses stable source IDs in `StartupContent.kt`. These IDs are the contract
 | `android-activity-lifecycle` | [The activity lifecycle](https://developer.android.com/guide/components/activities/activity-lifecycle) | The launch Activity moves through `onCreate()` → `onStart()` → `onResume()` in sequence. |
 | `compose-phases` | [Jetpack Compose phases](https://developer.android.com/develop/ui/compose/phases) | Compose produces UI through composition → layout → drawing. |
 | `android-app-startup` | [App Startup](https://developer.android.com/topic/libraries/app-startup) | Multiple ContentProviders have undetermined initialization order; App Startup shares one provider and expresses dependency order explicitly. |
+| `android-system-clock` | [`SystemClock`](https://developer.android.com/reference/android/os/SystemClock) | `elapsedRealtimeNanos()` is monotonic and suitable for general-purpose elapsed interval observations. |
+| `android-view-tree-observer` | [`ViewTreeObserver.OnDrawListener`](https://developer.android.com/reference/android/view/ViewTreeObserver.OnDrawListener) | The callback observes when the view tree is about to be drawn; the lab labels this as an observed frame rather than framework-reported TTID. |
 
 ## Claim boundaries
 
@@ -22,3 +24,15 @@ Task 6 uses stable source IDs in `StartupContent.kt`. These IDs are the contract
 - Provider creation before `Application.onCreate()` is a lifecycle boundary; no ordering is claimed between independent providers.
 - TTID is not described as “fully usable.” TTFD depends on the app reporting the appropriate fully-drawn state.
 - The timeline is educational content. It does not contain benchmark numbers or simulate blocking work.
+- The live recorder is also educational instrumentation. It adds observer cost, stores only in memory, and does not claim that its first-draw callback is the Android Framework TTID metric.
+
+## Staff-note coverage
+
+Every factual staff note in the UI owns at least one source ID. The source sheet resolves those IDs from the same `StartupContent.sources` map and exposes the exact official URL:
+
+- Entry-point variability → `android-app-startup-time`
+- Conditional USAP path → `aosp-zygote`
+- Partial provider ordering → `android-application-on-create`, `android-content-provider`, `android-app-startup`
+- Per-process `Application` mental model → `android-processes-and-threads`, `android-application-on-create`
+- TTID versus TTFD → `android-app-startup-time`
+- Observed draw versus framework metric → `android-system-clock`, `android-view-tree-observer`, `android-app-startup-time`
