@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -45,6 +46,8 @@ import com.krahs.androidstafflab.ui.designsystem.LabOrganicPanel
 import com.krahs.androidstafflab.ui.designsystem.LabPill
 import com.krahs.androidstafflab.ui.designsystem.LabSectionHeader
 import com.krahs.androidstafflab.ui.theme.AndroidStaffLabTheme
+import com.krahs.androidstafflab.startuptrace.StartupEventRecord
+import com.krahs.androidstafflab.startuptrace.StartupEventRecorder
 import kotlinx.coroutines.delay
 
 @Composable
@@ -53,6 +56,7 @@ fun ApplicationStartupScreen(
     viewModel: StartupFlowViewModel = viewModel(),
 ) {
     val stages = StartupContent.coldStartStages
+    val startupEvents = remember { StartupEventRecorder.snapshot() }
     val flowState by viewModel.uiState.collectAsStateWithLifecycle()
     val simulationState by viewModel.simulationState.collectAsStateWithLifecycle()
 
@@ -74,6 +78,7 @@ fun ApplicationStartupScreen(
         onFlowAction = viewModel::onAction,
         simulationState = simulationState,
         onSimulationAction = viewModel::onSimulationAction,
+        startupEvents = startupEvents,
         modifier = modifier,
     )
 }
@@ -86,6 +91,7 @@ private fun ApplicationStartupContent(
     onFlowAction: (StartupFlowAction) -> Unit,
     simulationState: StartupSimulationState,
     onSimulationAction: (StartupSimulationAction) -> Unit,
+    startupEvents: List<StartupEventRecord>,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -141,6 +147,8 @@ private fun ApplicationStartupContent(
                 state = simulationState,
                 onAction = onSimulationAction,
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            StartupEventLog(records = startupEvents)
             Spacer(modifier = Modifier.height(20.dp))
             LabPill(
                 label = "${flowState.mode.label.uppercase()} MODE · SOURCE-BACKED",
@@ -293,5 +301,6 @@ private fun ApplicationStartupPreviewContent() {
         onFlowAction = {},
         simulationState = StartupSimulationState(),
         onSimulationAction = {},
+        startupEvents = emptyList(),
     )
 }
