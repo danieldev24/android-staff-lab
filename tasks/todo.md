@@ -85,6 +85,8 @@
 
 ## Task 7: Add startup flow player
 
+**Status:** Complete. Evidence: `docs/verification/task7-startup-flow-player.md`.
+
 **Description:** Extend the timeline into a deterministic Cold/Warm/Hot player driven by immutable state and explicit user actions.
 
 - Acceptance: Mode selection, play/pause, previous, next and reset work; skipped stages are explicit; actions never exceed stage bounds.
@@ -94,6 +96,8 @@
 - Estimated scope: Medium (5 files).
 
 ## Task 8: Deliver critical-path simulation lab
+
+**Status:** Complete. Evidence: `docs/verification/task8-critical-path-lab.md`.
 
 **Description:** Add four deterministic workload toggles, TTID/TTFD calculation and a before/after optimization comparison without performing the simulated work.
 
