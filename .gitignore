@@ -1,3 +1,9 @@
 # Local specifications are conversation artifacts, not product source.
 specs/
 
+# Gradle and Android Studio generated state.
+.gradle/
+**/build/
+local.properties
+.idea/
+*.iml
