@@ -41,6 +41,8 @@ fun StartupTimeline(
     lanes: List<StartupLane>,
     stages: List<StartupStage>,
     selectedStageId: String,
+    skippedStageIds: Set<String>,
+    modeLabel: String,
     onStageSelected: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -55,6 +57,8 @@ fun StartupTimeline(
                     stage = stage,
                     stageCount = stages.size,
                     isSelected = stage.id == selectedStageId,
+                    isSkipped = stage.id in skippedStageIds,
+                    modeLabel = modeLabel,
                     showConnector = index < stages.lastIndex,
                     onClick = { onStageSelected(stage.id) },
                 )
@@ -126,6 +130,8 @@ private fun StartupStageRow(
     stage: StartupStage,
     stageCount: Int,
     isSelected: Boolean,
+    isSkipped: Boolean,
+    modeLabel: String,
     showConnector: Boolean,
     onClick: () -> Unit,
 ) {
@@ -149,14 +155,19 @@ private fun StartupStageRow(
                 .testTag("startup-stage-${stage.id}")
                 .semantics {
                     selected = isSelected
-                    stateDescription = if (isSelected) "Selected" else "Collapsed"
+                    stateDescription = when {
+                        isSkipped && isSelected -> "Skipped in $modeLabel · selected"
+                        isSkipped -> "Skipped in $modeLabel"
+                        isSelected -> "Current stage"
+                        else -> "Pending"
+                    }
                     contentDescription = "Stage ${stage.order} of $stageCount, ${stage.title}, ${stage.lane.label}"
                 },
             shape = MaterialTheme.shapes.medium,
-            color = if (isSelected) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surface
+            color = when {
+                isSelected -> MaterialTheme.colorScheme.primaryContainer
+                isSkipped -> MaterialTheme.colorScheme.surfaceVariant
+                else -> MaterialTheme.colorScheme.surface
             },
             contentColor = if (isSelected) {
                 MaterialTheme.colorScheme.onPrimaryContainer
@@ -182,6 +193,13 @@ private fun StartupStageRow(
                         color = stage.lane.color(),
                         style = MaterialTheme.typography.labelSmall,
                     )
+                    if (isSkipped) {
+                        Text(
+                            text = "SKIPPED IN ${modeLabel.uppercase()}",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                    }
                     Text(
                         text = stage.title,
                         fontWeight = FontWeight.Bold,

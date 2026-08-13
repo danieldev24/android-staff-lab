@@ -19,10 +19,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -31,27 +29,45 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.krahs.androidstafflab.feature.startup.StartupFlowViewModel
 import com.krahs.androidstafflab.feature.startup.content.StartupContent
 import com.krahs.androidstafflab.feature.startup.content.StartupLane
 import com.krahs.androidstafflab.feature.startup.content.StartupStage
+import com.krahs.androidstafflab.feature.startup.model.StartupFlowAction
+import com.krahs.androidstafflab.feature.startup.model.StartupFlowUiState
 import com.krahs.androidstafflab.ui.designsystem.LabHatchedBand
 import com.krahs.androidstafflab.ui.designsystem.LabOrganicPanel
 import com.krahs.androidstafflab.ui.designsystem.LabPill
 import com.krahs.androidstafflab.ui.designsystem.LabSectionHeader
 import com.krahs.androidstafflab.ui.theme.AndroidStaffLabTheme
+import kotlinx.coroutines.delay
 
 @Composable
-fun ApplicationStartupScreen(modifier: Modifier = Modifier) {
+fun ApplicationStartupScreen(
+    modifier: Modifier = Modifier,
+    viewModel: StartupFlowViewModel = viewModel(),
+) {
     val stages = StartupContent.coldStartStages
-    var selectedStageId by rememberSaveable {
-        mutableStateOf(stages.first().id)
+    val flowState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(
+        flowState.isPlaying,
+        flowState.currentStageId,
+        flowState.mode,
+    ) {
+        if (flowState.isPlaying) {
+            delay(1_200)
+            viewModel.onAction(StartupFlowAction.PlaybackTick)
+        }
     }
 
     ApplicationStartupContent(
         lanes = StartupLane.entries,
         stages = stages,
-        selectedStageId = selectedStageId,
-        onStageSelected = { selectedStageId = it },
+        flowState = flowState,
+        onFlowAction = viewModel::onAction,
         modifier = modifier,
     )
 }
@@ -60,8 +76,8 @@ fun ApplicationStartupScreen(modifier: Modifier = Modifier) {
 private fun ApplicationStartupContent(
     lanes: List<StartupLane>,
     stages: List<StartupStage>,
-    selectedStageId: String,
-    onStageSelected: (String) -> Unit,
+    flowState: StartupFlowUiState,
+    onFlowAction: (StartupFlowAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -92,16 +108,29 @@ private fun ApplicationStartupContent(
                     style = MaterialTheme.typography.bodyLarge,
                 )
                 Spacer(modifier = Modifier.height(22.dp))
+                StartupFlowPlayer(
+                    state = flowState,
+                    stages = stages,
+                    onAction = onFlowAction,
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 StartupTimeline(
                     lanes = lanes,
                     stages = stages,
-                    selectedStageId = selectedStageId,
-                    onStageSelected = onStageSelected,
+                    selectedStageId = flowState.currentStageId,
+                    skippedStageIds = stages
+                        .map(StartupStage::id)
+                        .filterNot(flowState.activeStageIds::contains)
+                        .toSet(),
+                    modeLabel = flowState.mode.label,
+                    onStageSelected = { stageId ->
+                        onFlowAction(StartupFlowAction.SelectStage(stageId))
+                    },
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
             LabPill(
-                label = "COLD MODE · SOURCE-BACKED",
+                label = "${flowState.mode.label.uppercase()} MODE · SOURCE-BACKED",
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             )
