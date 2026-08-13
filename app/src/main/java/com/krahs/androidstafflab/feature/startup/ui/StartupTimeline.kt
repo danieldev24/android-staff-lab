@@ -1,19 +1,19 @@
 package com.krahs.androidstafflab.feature.startup.ui
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -31,10 +32,10 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.krahs.androidstafflab.feature.startup.content.StartupLane
 import com.krahs.androidstafflab.feature.startup.content.StartupStage
-import com.krahs.androidstafflab.ui.designsystem.LabIconBadge
 import com.krahs.androidstafflab.ui.theme.traceColors
 
 @Composable
@@ -48,25 +49,54 @@ fun StartupTimeline(
     onViewSources: (List<String>) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val selectedStage = stages.first { it.id == selectedStageId }
+
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(18.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         LaneMap(lanes = lanes, stages = stages)
-        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-            stages.forEachIndexed { index, stage ->
-                StartupStageRow(
-                    stage = stage,
-                    stageCount = stages.size,
-                    isSelected = stage.id == selectedStageId,
-                    isSkipped = stage.id in skippedStageIds,
-                    modeLabel = modeLabel,
-                    showConnector = index < stages.lastIndex,
-                    onClick = { onStageSelected(stage.id) },
-                    onViewSources = { onViewSources(stage.sourceIds) },
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.semantics { heading() },
+                    text = "9-stage trace",
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    text = "Swipe stages →",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelLarge,
                 )
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                stages.forEach { stage ->
+                    StartupStageCard(
+                        stage = stage,
+                        stageCount = stages.size,
+                        isSelected = stage.id == selectedStageId,
+                        isSkipped = stage.id in skippedStageIds,
+                        modeLabel = modeLabel,
+                        onClick = { onStageSelected(stage.id) },
+                    )
+                }
+            }
         }
+        SelectedStageLesson(
+            stage = selectedStage,
+            isSkipped = selectedStage.id in skippedStageIds,
+            modeLabel = modeLabel,
+            onViewSources = { onViewSources(selectedStage.sourceIds) },
+        )
     }
 }
 
@@ -75,53 +105,51 @@ private fun LaneMap(
     lanes: List<StartupLane>,
     stages: List<StartupStage>,
 ) {
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.large,
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 3.dp,
-    ) {
-        Column(
-            modifier = Modifier.padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+            modifier = Modifier.semantics { heading() },
+            text = "Execution lanes",
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            Text(
-                modifier = Modifier.semantics { heading() },
-                text = "Lane map",
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.titleMedium,
-            )
             lanes.forEach { lane ->
                 val laneColor = lane.color()
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("startup-lane"),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                Surface(
+                    modifier = Modifier.testTag("startup-lane"),
+                    shape = CircleShape,
+                    color = laneColor.copy(alpha = 0.12f),
+                    contentColor = MaterialTheme.colorScheme.onSurface,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .clip(CircleShape),
+                    Row(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Canvas(modifier = Modifier.matchParentSize()) {
-                            drawCircle(color = laneColor)
+                        Box(
+                            modifier = Modifier
+                                .size(10.dp)
+                                .clip(CircleShape),
+                        ) {
+                            Canvas(modifier = Modifier.matchParentSize()) {
+                                drawCircle(color = laneColor)
+                            }
                         }
+                        Text(
+                            text = lane.label,
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                        Text(
+                            text = stages.count { it.lane == lane }.toString(),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
                     }
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = lane.label,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    Text(
-                        text = stages.count { it.lane == lane }.let { count ->
-                            "$count ${if (count == 1) "stage" else "stages"}"
-                        },
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelSmall,
-                    )
                 }
             }
         }
@@ -129,33 +157,22 @@ private fun LaneMap(
 }
 
 @Composable
-private fun StartupStageRow(
+private fun StartupStageCard(
     stage: StartupStage,
     stageCount: Int,
     isSelected: Boolean,
     isSkipped: Boolean,
     modeLabel: String,
-    showConnector: Boolean,
     onClick: () -> Unit,
-    onViewSources: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(IntrinsicSize.Min)
-            .testTag("startup-stage"),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        StageRail(
-            order = stage.order,
-            color = stage.lane.color(),
-            showConnector = showConnector,
-        )
+    val stageColor = stage.lane.color()
+    Box(modifier = Modifier.testTag("startup-stage")) {
         Surface(
             onClick = onClick,
             modifier = Modifier
-                .weight(1f)
-                .defaultMinSize(minHeight = 48.dp)
+                .widthIn(min = 132.dp, max = 148.dp)
+                .heightIn(min = 112.dp)
+                .alpha(if (isSkipped && !isSelected) 0.52f else 1f)
                 .testTag("startup-stage-${stage.id}")
                 .semantics {
                     selected = isSelected
@@ -165,81 +182,53 @@ private fun StartupStageRow(
                         isSelected -> "Current stage"
                         else -> "Pending"
                     }
-                    contentDescription = "Stage ${stage.order} of $stageCount, ${stage.title}, ${stage.lane.label}"
+                    contentDescription =
+                        "Stage ${stage.order} of $stageCount, ${stage.title}, ${stage.lane.label}"
                 },
             shape = MaterialTheme.shapes.medium,
-            color = when {
-                isSelected -> MaterialTheme.colorScheme.primaryContainer
-                isSkipped -> MaterialTheme.colorScheme.surfaceVariant
-                else -> MaterialTheme.colorScheme.surface
+            color = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surface
             },
             contentColor = if (isSelected) {
                 MaterialTheme.colorScheme.onPrimaryContainer
             } else {
                 MaterialTheme.colorScheme.onSurface
             },
-            shadowElevation = if (isSelected) 6.dp else 2.dp,
+            shadowElevation = if (isSelected) 4.dp else 1.dp,
         ) {
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Surface(
+            Column {
+                Box(
                     modifier = Modifier
-                        .width(6.dp)
-                        .fillMaxHeight(),
-                    color = stage.lane.color(),
-                    content = {},
-                )
+                        .fillMaxWidth()
+                        .height(5.dp),
+                ) {
+                    Canvas(modifier = Modifier.matchParentSize()) {
+                        drawRect(color = stageColor)
+                    }
+                }
                 Column(
-                    modifier = Modifier.padding(18.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = stage.lane.label.uppercase(),
-                        color = stage.lane.color(),
-                        style = MaterialTheme.typography.labelSmall,
+                        text = stage.order.toString().padStart(2, '0'),
+                        color = stageColor,
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                    Text(
+                        text = stage.title,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.bodyLarge,
                     )
                     if (isSkipped) {
                         Text(
-                            text = "SKIPPED IN ${modeLabel.uppercase()}",
+                            text = "SKIPPED",
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.labelLarge,
-                        )
-                    }
-                    Text(
-                        text = stage.title,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    Text(
-                        text = stage.summary,
-                        color = if (isSelected) {
-                            MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f)
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                    if (isSelected) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        LearningLayer(
-                            label = "What happens",
-                            body = stage.whatHappens,
-                        )
-                        LearningLayer(
-                            label = "Where it runs",
-                            body = stage.whereItRuns,
-                        )
-                        LearningLayer(
-                            label = "Why it matters",
-                            body = stage.whyItMatters,
-                        )
-                        LearningLayer(
-                            label = "Staff note",
-                            body = stage.staffNote,
-                            accentColor = MaterialTheme.colorScheme.secondary,
-                        )
-                        SourceIds(
-                            sourceIds = stage.sourceIds,
-                            onViewSources = onViewSources,
+                            style = MaterialTheme.typography.labelSmall,
                         )
                     }
                 }
@@ -249,27 +238,67 @@ private fun StartupStageRow(
 }
 
 @Composable
-private fun StageRail(
-    order: Int,
-    color: Color,
-    showConnector: Boolean,
+private fun SelectedStageLesson(
+    stage: StartupStage,
+    isSkipped: Boolean,
+    modeLabel: String,
+    onViewSources: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxHeight(),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 3.dp,
     ) {
-        LabIconBadge(
-            symbol = order.toString().padStart(2, '0'),
-            color = color,
-        )
-        if (showConnector) {
-            Canvas(
-                modifier = Modifier
-                    .width(2.dp)
-                    .weight(1f),
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                drawRect(color = color.copy(alpha = 0.34f))
+                Text(
+                    text = stage.order.toString().padStart(2, '0'),
+                    color = stage.lane.color(),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stage.lane.label.uppercase(),
+                        color = stage.lane.color(),
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                    Text(
+                        modifier = Modifier.semantics { heading() },
+                        text = stage.title,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+                if (isSkipped) {
+                    Text(
+                        text = "Skipped in $modeLabel",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelSmall,
+                    )
+                }
             }
+            Text(
+                text = stage.summary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            LearningLayer(label = "What happens", body = stage.whatHappens)
+            LearningLayer(label = "Where it runs", body = stage.whereItRuns)
+            LearningLayer(label = "Why it matters", body = stage.whyItMatters)
+            LearningLayer(
+                label = "Staff note",
+                body = stage.staffNote,
+                accentColor = MaterialTheme.colorScheme.secondary,
+            )
+            SourceIds(sourceIds = stage.sourceIds, onViewSources = onViewSources)
         }
     }
 }

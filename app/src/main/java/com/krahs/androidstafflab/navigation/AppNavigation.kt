@@ -39,7 +39,7 @@ fun AppNavigation(
         composable<TopicDetailRoute> { backStackEntry ->
             val route = backStackEntry.toRoute<TopicDetailRoute>()
             if (route.topicId == Topics.applicationStartup.id) {
-                ApplicationStartupScreen()
+                ApplicationStartupScreen(onBack = navController::navigateUp)
             }
         }
     }
