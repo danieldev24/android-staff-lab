@@ -6,7 +6,7 @@ The first complete topic answers:
 
 > **What happens when an Android application starts?**
 
-It includes a five-lane cold-start timeline, Cold/Warm/Hot player, TTID/TTFD critical-path lab, live in-process startup event log, and official Android/AOSP source notes.
+It teaches the topic as four focused lessons—Overview, Flow, Lab, and Evidence—with a five-lane startup trace, Cold/Warm/Hot player, TTID/TTFD critical-path lab, live in-process event log, and official Android/AOSP source notes.
 
 ## Project contract
 
@@ -84,4 +84,6 @@ docs/verification/       emulator screenshots and task evidence
 - [Final Application Startup verification](docs/verification/application-startup.md)
 - [Official Application Startup source map](docs/sources/application-startup.md)
 - [Accessible/adaptive UI matrix](docs/verification/task12-accessible-adaptive-ui.md)
+- [Education redesign verification](docs/verification/education-redesign.md)
 - [Design language](docs/design-system/visual-language.md)
+- [Education learning flow](docs/design-system/education-learning-flow.md)

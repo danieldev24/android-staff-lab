@@ -21,6 +21,7 @@ Use the visual character of the references without copying their course, calenda
 
 - Use a clean sans-serif family throughout.
 - Headlines are large, compact, and high-contrast; body copy stays conversational and readable.
+- Use four base sizes (32, 24, 16, and 12 sp) and two weights (Bold and Normal) to keep hierarchy teachable and repeatable.
 - Labels use sentence case or short uppercase overlines. Monospace is reserved for genuine runtime data such as timestamps, not for general navigation.
 
 ### Shape and Depth
@@ -37,6 +38,8 @@ Use the visual character of the references without copying their course, calenda
 - Prefer one strong hero card followed by grouped learning sections.
 - Leave deliberate negative space around headings and controls.
 - Dense technical content reflows vertically at large font scales instead of preserving a fixed card height.
+- Split a topic into focused lessons and disclose one technical detail at a time instead of building a single long article.
+- Keep lesson progress at the top and Previous/Next learning actions fixed in the bottom thumb zone.
 
 ## Reusable Compose Primitives
 
@@ -52,13 +55,13 @@ Use the visual character of the references without copying their course, calenda
 
 | Android Staff Lab function | Visual treatment |
 |---|---|
-| Topic library | Large editorial topic cards with an accent badge and progress footer |
-| Application Startup overview | Violet hero card with abstract overlays and a compact progress pill |
+| Topic library | Track introduction, path summary, and editorial topic cards with explicit lesson metadata |
+| Application Startup overview | Violet hero card, learning outcomes, four-lesson progress, and a fixed next action |
 | Cold/Warm/Hot modes | Rounded labeled pills; selection is expressed by fill, text, and semantics |
-| Five startup lanes | Accent badge + explicit lane name + ordered event card |
+| Five startup lanes | Horizontal labeled lane overview plus one selected stage detail |
 | Critical-path simulation | Lavender organic panel containing white result cards |
 | Live event log | Timeline cards with timestamp, process/thread label, and measured-state badge |
-| Staff notes and sources | Neutral cards with coral warning or mint evidence accents |
+| Staff notes and sources | Numbered selector plus one focused caveat card and adjacent sources |
 
 ## Accessibility Contract
 
