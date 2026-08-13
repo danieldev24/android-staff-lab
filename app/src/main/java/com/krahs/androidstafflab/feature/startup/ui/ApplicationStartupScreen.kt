@@ -37,6 +37,8 @@ import com.krahs.androidstafflab.feature.startup.content.StartupLane
 import com.krahs.androidstafflab.feature.startup.content.StartupStage
 import com.krahs.androidstafflab.feature.startup.model.StartupFlowAction
 import com.krahs.androidstafflab.feature.startup.model.StartupFlowUiState
+import com.krahs.androidstafflab.feature.startup.model.StartupSimulationAction
+import com.krahs.androidstafflab.feature.startup.model.StartupSimulationState
 import com.krahs.androidstafflab.ui.designsystem.LabHatchedBand
 import com.krahs.androidstafflab.ui.designsystem.LabOrganicPanel
 import com.krahs.androidstafflab.ui.designsystem.LabPill
@@ -51,6 +53,7 @@ fun ApplicationStartupScreen(
 ) {
     val stages = StartupContent.coldStartStages
     val flowState by viewModel.uiState.collectAsStateWithLifecycle()
+    val simulationState by viewModel.simulationState.collectAsStateWithLifecycle()
 
     LaunchedEffect(
         flowState.isPlaying,
@@ -68,6 +71,8 @@ fun ApplicationStartupScreen(
         stages = stages,
         flowState = flowState,
         onFlowAction = viewModel::onAction,
+        simulationState = simulationState,
+        onSimulationAction = viewModel::onSimulationAction,
         modifier = modifier,
     )
 }
@@ -78,6 +83,8 @@ private fun ApplicationStartupContent(
     stages: List<StartupStage>,
     flowState: StartupFlowUiState,
     onFlowAction: (StartupFlowAction) -> Unit,
+    simulationState: StartupSimulationState,
+    onSimulationAction: (StartupSimulationAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -128,6 +135,11 @@ private fun ApplicationStartupContent(
                     },
                 )
             }
+            Spacer(modifier = Modifier.height(24.dp))
+            StartupLab(
+                state = simulationState,
+                onAction = onSimulationAction,
+            )
             Spacer(modifier = Modifier.height(20.dp))
             LabPill(
                 label = "${flowState.mode.label.uppercase()} MODE · SOURCE-BACKED",
