@@ -61,6 +61,8 @@
 
 ## Task 5: Deliver Topic Library route
 
+**Status:** Complete. Evidence: `docs/verification/task5-topic-library.md`.
+
 **Description:** Add the two-destination navigation contract and make the single Application Startup topic discoverable from the library screen.
 
 - Acceptance: Library lists one stable topic card; tapping it opens the correct detail destination; system back returns to Library.
