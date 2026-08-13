@@ -16,6 +16,7 @@ Xây một greenfield Jetpack Compose app theo các vertical slice có thể bui
 - **Compose primitives/Canvas:** timeline và bar chart không cần third-party chart dependency.
 - **Hybrid showcase:** system-side flow là source-backed simulation; app-side callback order dùng live recorder với monotonic timestamp.
 - **Simulation không block thật:** mọi workload cost là data model; production/debug startup path không có `sleep`, disk I/O hay network I/O có chủ đích.
+- **Reusable education design system:** visual direction is captured in `docs/design-system/visual-language.md`; features consume semantic tokens and shared Compose primitives rather than raw colors or one-off shapes.
 - **Accessibility là constraint kiến trúc:** semantic state, 48dp targets, reduced motion và 200% font scale được thiết kế cùng component contract.
 
 ## Dependency Graph
