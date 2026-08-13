@@ -116,6 +116,8 @@
 
 ## Task 9: Capture real startup events
 
+**Status:** Complete. Evidence: `docs/verification/task9-11-live-showcase.md`.
+
 **Description:** Instrument the app process with a constant-time recorder, educational provider and lifecycle hooks using monotonic relative timestamps.
 
 - Acceptance: Provider, Application, activity lifecycle, Compose entry and first-frame events can produce at least seven ordered records; hooks perform no blocking I/O or sleep.
@@ -125,6 +127,8 @@
 - Estimated scope: Medium (5 files).
 
 ## Task 10: Present live startup event log
+
+**Status:** Complete. Evidence: `docs/verification/task9-11-live-showcase.md`.
 
 **Description:** Expose captured events on the topic screen with process/thread context, relative duration and an explicit observer-effect explanation.
 
@@ -136,6 +140,8 @@
 
 ## Task 11: Add staff notes source map
 
+**Status:** Complete. Evidence: `docs/verification/task9-11-live-showcase.md`.
+
 **Description:** Complete the staff-level caveats and provide a direct official-source path for every factual note shown in the app.
 
 - Acceptance: Each factual note has an official Android/AOSP source ID and URL; USAP/provider/TTID caveats are worded without universal claims; links are accessible from UI.
@@ -145,6 +151,8 @@
 - Estimated scope: Medium (5 files).
 
 ## Checkpoint C: Showcase
+
+**Status:** Complete. Evidence: `docs/verification/task9-11-live-showcase.md`.
 
 - Acceptance: Tasks 9–11 provide a truthful live showcase with complete official-source coverage.
 - Verify: Cold-launch via ADB, then run `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest`.
