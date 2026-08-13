@@ -84,45 +84,47 @@ fun AndroidStaffLabRoot(modifier: Modifier = Modifier) {
 private fun LabHeader() {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(MaterialTheme.colorScheme.primary),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "AS",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontWeight = FontWeight.Black,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-            Column {
-                Text(
-                    text = "ANDROID STAFF LAB",
-                    color = MaterialTheme.colorScheme.onBackground,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    text = "SYSTEMS · RUNTIME · PERFORMANCE",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.labelSmall,
-                )
-            }
+            Text(
+                text = "AS",
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontWeight = FontWeight.Black,
+                style = MaterialTheme.typography.titleMedium,
+            )
         }
-        Text(
-            text = "01",
-            color = MaterialTheme.colorScheme.outline,
-            style = MaterialTheme.typography.titleMedium,
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "ANDROID STAFF LAB",
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = "SYSTEMS · RUNTIME · PERFORMANCE",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelSmall,
+            )
+        }
+    }
+}
+
+@Preview(
+    name = "Large font",
+    showBackground = true,
+    fontScale = 2f,
+)
+@Composable
+private fun AndroidStaffLabRootLargeFontPreview() {
+    AndroidStaffLabTheme {
+        AndroidStaffLabRoot()
     }
 }
 
@@ -201,4 +203,3 @@ private fun AndroidStaffLabRootDarkPreview() {
         AndroidStaffLabRoot()
     }
 }
-
