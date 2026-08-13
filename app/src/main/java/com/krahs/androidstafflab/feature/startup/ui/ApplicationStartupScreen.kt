@@ -37,6 +37,7 @@ import com.krahs.androidstafflab.feature.startup.content.StartupLane
 import com.krahs.androidstafflab.feature.startup.content.StartupStage
 import com.krahs.androidstafflab.feature.startup.model.StartupFlowAction
 import com.krahs.androidstafflab.feature.startup.model.StartupFlowUiState
+import com.krahs.androidstafflab.feature.startup.model.StartupMode
 import com.krahs.androidstafflab.feature.startup.model.StartupSimulationAction
 import com.krahs.androidstafflab.feature.startup.model.StartupSimulationState
 import com.krahs.androidstafflab.ui.designsystem.LabHatchedBand
@@ -261,7 +262,7 @@ private fun HeroTexture(modifier: Modifier = Modifier) {
 @Composable
 private fun ApplicationStartupScreenPreview() {
     AndroidStaffLabTheme {
-        ApplicationStartupScreen()
+        ApplicationStartupPreviewContent()
     }
 }
 
@@ -273,6 +274,24 @@ private fun ApplicationStartupScreenPreview() {
 @Composable
 private fun ApplicationStartupScreenLargeFontPreview() {
     AndroidStaffLabTheme {
-        ApplicationStartupScreen()
+        ApplicationStartupPreviewContent()
     }
+}
+
+@Composable
+private fun ApplicationStartupPreviewContent() {
+    val stages = StartupContent.coldStartStages
+    ApplicationStartupContent(
+        lanes = StartupLane.entries,
+        stages = stages,
+        flowState = StartupFlowUiState(
+            mode = StartupMode.COLD,
+            currentStageId = stages.first().id,
+            activeStageIds = stages.map(StartupStage::id).toSet(),
+            isPlaying = false,
+        ),
+        onFlowAction = {},
+        simulationState = StartupSimulationState(),
+        onSimulationAction = {},
+    )
 }
