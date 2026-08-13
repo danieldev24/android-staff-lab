@@ -32,11 +32,17 @@ import com.krahs.androidstafflab.ui.designsystem.LabIconBadge
 import com.krahs.androidstafflab.ui.designsystem.LabOrganicPanel
 import com.krahs.androidstafflab.ui.designsystem.LabPill
 import com.krahs.androidstafflab.ui.designsystem.LabSectionHeader
+import com.krahs.androidstafflab.navigation.AppNavigation
 import com.krahs.androidstafflab.ui.theme.AndroidStaffLabTheme
 import com.krahs.androidstafflab.ui.theme.traceColors
 
 @Composable
 fun AndroidStaffLabRoot(modifier: Modifier = Modifier) {
+    AppNavigation(modifier = modifier)
+}
+
+@Composable
+internal fun ApplicationStartupScreen(modifier: Modifier = Modifier) {
     Surface(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
