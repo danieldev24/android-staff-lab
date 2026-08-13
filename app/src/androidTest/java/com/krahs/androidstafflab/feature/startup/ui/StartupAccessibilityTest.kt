@@ -29,11 +29,22 @@ class StartupAccessibilityTest {
     fun denseControls_have48DpTargetsAndActionSemantics() {
         openApplicationStartupTopic()
 
+        composeTestRule.onNodeWithTag("startup-lesson-flow").performClick()
         listOf(
             "startup-control-previous",
             "startup-control-next",
             "startup-control-play-pause",
             "startup-control-reset",
+        ).forEach { tag ->
+            composeTestRule
+                .onNodeWithTag(tag)
+                .performScrollTo()
+                .assertHeightIsAtLeast(48.dp)
+                .assertHasClickAction()
+        }
+
+        composeTestRule.onNodeWithTag("startup-lesson-lab").performClick()
+        listOf(
             "startup-lab-run",
             "startup-lab-apply-fixes",
             "startup-lab-reset",
@@ -50,6 +61,7 @@ class StartupAccessibilityTest {
     fun timelineWorkloadAndEvent_exposeOrderLaneStateAndRole() {
         openApplicationStartupTopic()
 
+        composeTestRule.onNodeWithTag("startup-lesson-flow").performClick()
         composeTestRule
             .onNodeWithTag("startup-stage-launch-request")
             .assertContentDescriptionEquals(
@@ -62,6 +74,7 @@ class StartupAccessibilityTest {
                 ),
             )
 
+        composeTestRule.onNodeWithTag("startup-lesson-lab").performClick()
         composeTestRule
             .onNodeWithTag("startup-workload-provider-sdk-auto-init")
             .performScrollTo()
@@ -78,6 +91,7 @@ class StartupAccessibilityTest {
                 ),
             )
 
+        composeTestRule.onNodeWithTag("startup-lesson-evidence").performClick()
         composeTestRule
             .onAllNodesWithTag("startup-event-record")[0]
             .performScrollTo()

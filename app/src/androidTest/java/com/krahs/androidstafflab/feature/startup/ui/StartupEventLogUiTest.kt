@@ -22,10 +22,10 @@ class StartupEventLogUiTest {
     @Test
     fun topicScreen_showsSevenObservedEventsWithContextAndObserverCaveat() {
         composeTestRule.onNodeWithTag("topic-card-application-startup").performClick()
+        composeTestRule.onNodeWithTag("startup-lesson-evidence").performClick()
 
         composeTestRule
             .onNodeWithText("Observed startup event log")
-            .performScrollTo()
             .assertIsDisplayed()
         composeTestRule.onAllNodesWithTag("startup-event-record").assertCountEquals(7)
         composeTestRule.onNodeWithText("Process / thread").assertExists()

@@ -23,10 +23,11 @@ class StaffNotesTest {
     @Test
     fun staffNotes_exposeOfficialSourcesInAccessibleSheet() {
         composeTestRule.onNodeWithTag("topic-card-application-startup").performClick()
+        composeTestRule.onNodeWithTag("startup-lesson-evidence").performClick()
+        composeTestRule.onNodeWithTag("startup-evidence-staff-notes").performClick()
 
         composeTestRule
             .onNodeWithText("Staff notes & caveats")
-            .performScrollTo()
             .assertIsDisplayed()
         composeTestRule.onAllNodesWithTag("staff-note").assertCountEquals(6)
 

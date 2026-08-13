@@ -40,4 +40,25 @@ class AppNavigationTest {
             .onNodeWithText("Topic library")
             .assertIsDisplayed()
     }
+
+    @Test
+    fun applicationStartupLesson_progressesThroughFourShortChapters() {
+        composeTestRule
+            .onNodeWithTag("topic-card-application-startup")
+            .performClick()
+
+        composeTestRule.onNodeWithText("Build the mental model").assertIsDisplayed()
+
+        listOf(
+            "Follow one launch",
+            "Shape the critical path",
+            "Compare model with reality",
+        ).forEach { lessonTitle ->
+            composeTestRule.onNodeWithTag("startup-lesson-next").performClick()
+            composeTestRule.onNodeWithText(lessonTitle).assertIsDisplayed()
+        }
+
+        composeTestRule.onNodeWithTag("startup-lesson-next").performClick()
+        composeTestRule.onNodeWithTag("startup-lesson-complete").assertIsDisplayed()
+    }
 }

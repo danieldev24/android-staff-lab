@@ -80,8 +80,11 @@ class StartupFlowPlayerTest {
             .performClick()
 
         composeTestRule
+            .onNodeWithTag("startup-lesson-flow")
+            .performClick()
+
+        composeTestRule
             .onNodeWithText("Startup flow player")
-            .performScrollTo()
             .assertIsDisplayed()
     }
 }

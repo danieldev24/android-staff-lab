@@ -8,7 +8,9 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.krahs.androidstafflab.MainActivity
 import org.junit.Rule
@@ -46,7 +48,7 @@ class StartupTimelineTest {
         composeTestRule
             .onNodeWithTag("startup-stage-create-application-and-providers")
             .performScrollTo()
-            .performClick()
+            .performSemanticsAction(SemanticsActions.OnClick)
             .assertIsSelected()
 
         listOf(
@@ -79,7 +81,11 @@ class StartupTimelineTest {
             .performClick()
 
         composeTestRule
-            .onNodeWithText("Cold-start timeline")
+            .onNodeWithTag("startup-lesson-flow")
+            .performClick()
+
+        composeTestRule
+            .onNodeWithText("9-stage trace")
             .performScrollTo()
             .assertIsDisplayed()
     }

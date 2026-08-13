@@ -86,8 +86,11 @@ class StartupLabTest {
             .performClick()
 
         composeTestRule
+            .onNodeWithTag("startup-lesson-lab")
+            .performClick()
+
+        composeTestRule
             .onNodeWithText("Critical-path lab")
-            .performScrollTo()
             .assertIsDisplayed()
     }
 }
