@@ -73,6 +73,8 @@
 
 ## Task 6: Render cold-start timeline
 
+**Status:** Complete. Evidence: `docs/verification/task6-cold-start-timeline.md`.
+
 **Description:** Deliver the first complete learning slice: a source-backed cold-start timeline with five lanes, ordered stages and staff-level detail cards.
 
 - Acceptance: Cold mode renders at least five lanes and all spec stages; each selected stage exposes what/where/why/staff note; sources are represented by stable IDs.
