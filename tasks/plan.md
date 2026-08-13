@@ -1,6 +1,6 @@
 # Implementation Plan: Android Staff Lab — Application Startup
 
-Status: Proposed for implementation approval  
+Status: Active — Checkpoint A complete  
 Source spec: `specs/application-startup.md`  
 Package: `com.krahs.androidstafflab`
 
@@ -131,4 +131,3 @@ Toolchain contract
 ## Open Questions
 
 None. Exact stable dependency versions are a Task 1 output, not a product decision.
-

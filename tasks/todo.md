@@ -4,6 +4,8 @@
 
 ## Task 1: Pin Android toolchain contract
 
+**Status:** Complete.
+
 **Description:** Resolve the current official stable AGP/Kotlin/Compose/Navigation versions compatible with SDK 36, record the rationale, and establish a version catalog without introducing feature code.
 
 - Acceptance: Exact versions are pinned; `minSdk=26`, `compileSdk=36`, `targetSdk=36`; only approved dependencies are declared.
@@ -13,6 +15,8 @@
 - Estimated scope: Medium (4 files).
 
 ## Task 2: Add reproducible Gradle wrapper
+
+**Status:** Complete.
 
 **Description:** Add the wrapper files needed to run the pinned toolchain consistently from the command line and Android Studio.
 
@@ -24,6 +28,8 @@
 
 ## Task 3: Build installable Compose shell
 
+**Status:** Complete.
+
 **Description:** Create the app module, manifest, package structure and minimal `MainActivity` so the project produces a debug APK before feature work begins.
 
 - Acceptance: Application ID and namespace are `com.krahs.androidstafflab`; launcher activity renders a minimal Compose text; no startup-blocking work exists.
@@ -34,6 +40,8 @@
 
 ## Task 4: Establish technical-trace app shell
 
+**Status:** Complete.
+
 **Description:** Replace the placeholder with the app root and a restrained Material 3 theme whose semantic lane colors can support the future timeline.
 
 - Acceptance: App root uses Material 3; light/dark color roles meet readable contrast; no feature owns raw semantic colors.
@@ -43,6 +51,8 @@
 - Estimated scope: Medium (5 files).
 
 ## Checkpoint A: Foundation
+
+**Status:** Complete. Evidence: `docs/verification/foundation.md`.
 
 - Acceptance: Tasks 1–4 are complete and the debug app builds from a clean Gradle invocation.
 - Verify: `./gradlew clean :app:assembleDebug`.
@@ -157,4 +167,3 @@
 
 - Acceptance: The approved Application Startup vertical slice is buildable, testable, accessible and source-backed.
 - Verify: Review `docs/verification/application-startup.md` against the spec traceability table.
-
