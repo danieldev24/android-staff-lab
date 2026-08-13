@@ -161,6 +161,8 @@
 
 ## Task 12: Verify accessible adaptive UI
 
+**Status:** Complete. Evidence: `docs/verification/task12-accessible-adaptive-ui.md`.
+
 **Description:** Harden interaction semantics, reduced-motion behavior, touch targets and layout reflow across the four dense visual components.
 
 - Acceptance: All icon-only controls have action labels and >=48dp targets; reading order exposes lane/order/state; no content clips at 200% font scale.

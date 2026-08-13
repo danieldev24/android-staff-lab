@@ -1,5 +1,6 @@
 package com.krahs.androidstafflab.feature.startup.ui
 
+import android.animation.ValueAnimator
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,11 +8,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -62,15 +65,21 @@ fun ApplicationStartupScreen(
     val startupEvents = remember { StartupEventRecorder.snapshot() }
     val flowState by viewModel.uiState.collectAsStateWithLifecycle()
     val simulationState by viewModel.simulationState.collectAsStateWithLifecycle()
+    val reducedMotion = !ValueAnimator.areAnimatorsEnabled()
 
     LaunchedEffect(
         flowState.isPlaying,
         flowState.currentStageId,
         flowState.mode,
+        reducedMotion,
     ) {
         if (flowState.isPlaying) {
-            delay(1_200)
-            viewModel.onAction(StartupFlowAction.PlaybackTick)
+            if (reducedMotion) {
+                viewModel.onAction(StartupFlowAction.PlayPause)
+            } else {
+                delay(1_200)
+                viewModel.onAction(StartupFlowAction.PlaybackTick)
+            }
         }
     }
 
@@ -82,6 +91,7 @@ fun ApplicationStartupScreen(
         simulationState = simulationState,
         onSimulationAction = viewModel::onSimulationAction,
         startupEvents = startupEvents,
+        reducedMotion = reducedMotion,
         modifier = modifier,
     )
 }
@@ -95,6 +105,7 @@ private fun ApplicationStartupContent(
     simulationState: StartupSimulationState,
     onSimulationAction: (StartupSimulationAction) -> Unit,
     startupEvents: List<StartupEventRecord>,
+    reducedMotion: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val uriHandler = LocalUriHandler.current
@@ -105,13 +116,17 @@ private fun ApplicationStartupContent(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .safeDrawingPadding()
-                .padding(horizontal = 20.dp, vertical = 18.dp),
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 960.dp)
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .align(Alignment.TopCenter)
+                    .safeDrawingPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp, vertical = 18.dp),
+            ) {
             StartupHeader()
             Spacer(modifier = Modifier.height(36.dp))
             LabHatchedBand(modifier = Modifier.padding(horizontal = 12.dp))
@@ -133,6 +148,7 @@ private fun ApplicationStartupContent(
                     state = flowState,
                     stages = stages,
                     onAction = onFlowAction,
+                    reducedMotion = reducedMotion,
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 StartupTimeline(
@@ -169,6 +185,7 @@ private fun ApplicationStartupContent(
                 contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
             )
             Spacer(modifier = Modifier.height(12.dp))
+            }
         }
     }
     if (selectedSources.isNotEmpty()) {

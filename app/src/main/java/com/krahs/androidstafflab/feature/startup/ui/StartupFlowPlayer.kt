@@ -14,8 +14,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,8 +33,10 @@ fun StartupFlowPlayer(
     stages: List<StartupStage>,
     onAction: (StartupFlowAction) -> Unit,
     modifier: Modifier = Modifier,
+    reducedMotion: Boolean = false,
 ) {
     val currentStage = stages.first { it.id == state.currentStageId }
+    val useLargeTextLayout = LocalDensity.current.fontScale >= 1.5f
 
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -57,27 +62,40 @@ fun StartupFlowPlayer(
                 )
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                StartupMode.entries.forEach { mode ->
-                    FilterChip(
-                        selected = state.mode == mode,
-                        onClick = { onAction(StartupFlowAction.SelectMode(mode)) },
-                        label = { Text(mode.label) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .sizeIn(minHeight = 48.dp)
-                            .testTag("startup-mode-${mode.name.lowercase()}"),
-                    )
+            if (useLargeTextLayout) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    StartupMode.entries.forEach { mode ->
+                        ModeChip(
+                            mode = mode,
+                            selected = state.mode == mode,
+                            onAction = onAction,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    StartupMode.entries.forEach { mode ->
+                        ModeChip(
+                            mode = mode,
+                            selected = state.mode == mode,
+                            onAction = onAction,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
                 }
             }
 
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .testTag("startup-current-stage"),
+                    .testTag("startup-current-stage")
+                    .semantics {
+                        liveRegion = LiveRegionMode.Polite
+                    },
                 shape = MaterialTheme.shapes.medium,
                 color = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -99,14 +117,11 @@ fun StartupFlowPlayer(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
+            if (useLargeTextLayout) {
                 OutlinedButton(
                     onClick = { onAction(StartupFlowAction.Previous) },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .sizeIn(minHeight = 48.dp)
                         .testTag("startup-control-previous"),
                 ) {
@@ -115,36 +130,116 @@ fun StartupFlowPlayer(
                 OutlinedButton(
                     onClick = { onAction(StartupFlowAction.Next) },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .sizeIn(minHeight = 48.dp)
                         .testTag("startup-control-next"),
                 ) {
                     Text("Next")
                 }
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
                 Button(
-                    onClick = { onAction(StartupFlowAction.PlayPause) },
+                    onClick = {
+                        onAction(
+                            if (reducedMotion) StartupFlowAction.Next
+                            else StartupFlowAction.PlayPause,
+                        )
+                    },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .sizeIn(minHeight = 48.dp)
                         .testTag("startup-control-play-pause"),
                 ) {
-                    Text(if (state.isPlaying) "Pause" else "Play")
+                    Text(if (reducedMotion) "Step" else if (state.isPlaying) "Pause" else "Play")
                 }
                 OutlinedButton(
                     onClick = { onAction(StartupFlowAction.Reset) },
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .sizeIn(minHeight = 48.dp)
                         .testTag("startup-control-reset"),
                 ) {
                     Text("Reset")
                 }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    OutlinedButton(
+                        onClick = { onAction(StartupFlowAction.Previous) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .sizeIn(minHeight = 48.dp)
+                            .testTag("startup-control-previous"),
+                    ) {
+                        Text("Previous")
+                    }
+                    OutlinedButton(
+                        onClick = { onAction(StartupFlowAction.Next) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .sizeIn(minHeight = 48.dp)
+                            .testTag("startup-control-next"),
+                    ) {
+                        Text("Next")
+                    }
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Button(
+                        onClick = {
+                            onAction(
+                                if (reducedMotion) StartupFlowAction.Next
+                                else StartupFlowAction.PlayPause,
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .sizeIn(minHeight = 48.dp)
+                            .testTag("startup-control-play-pause"),
+                    ) {
+                        Text(
+                            if (reducedMotion) "Step"
+                            else if (state.isPlaying) "Pause"
+                            else "Play",
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = { onAction(StartupFlowAction.Reset) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .sizeIn(minHeight = 48.dp)
+                            .testTag("startup-control-reset"),
+                    ) {
+                        Text("Reset")
+                    }
+                }
+            }
+            if (reducedMotion) {
+                Text(
+                    text = "Reduced motion is on. Use Step to advance one stage at a time.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             }
         }
     }
+}
+
+@Composable
+private fun ModeChip(
+    mode: StartupMode,
+    selected: Boolean,
+    onAction: (StartupFlowAction) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = { onAction(StartupFlowAction.SelectMode(mode)) },
+        label = { Text(mode.label) },
+        modifier = modifier
+            .sizeIn(minHeight = 48.dp)
+            .testTag("startup-mode-${mode.name.lowercase()}"),
+    )
 }

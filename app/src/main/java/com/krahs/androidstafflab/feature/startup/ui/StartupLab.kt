@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -18,10 +19,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.krahs.androidstafflab.feature.startup.model.StartupComparison
@@ -128,8 +133,13 @@ fun StartupLab(
 
 @Composable
 private fun CurrentMetrics(metrics: StartupMetrics) {
+    val useLargeTextLayout = LocalDensity.current.fontScale >= 1.5f
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                liveRegion = LiveRegionMode.Polite
+            },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 3.dp,
@@ -143,20 +153,31 @@ private fun CurrentMetrics(metrics: StartupMetrics) {
                 color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleMedium,
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
+            if (useLargeTextLayout) {
                 MetricValue(
                     label = "TTID ${metrics.ttidMs} ms",
                     supporting = "first frame",
-                    modifier = Modifier.weight(1f),
                 )
                 MetricValue(
                     label = "TTFD ${metrics.ttfdMs} ms",
                     supporting = "fully usable",
-                    modifier = Modifier.weight(1f),
                 )
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    MetricValue(
+                        label = "TTID ${metrics.ttidMs} ms",
+                        supporting = "first frame",
+                        modifier = Modifier.weight(1f),
+                    )
+                    MetricValue(
+                        label = "TTFD ${metrics.ttfdMs} ms",
+                        supporting = "fully usable",
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
             MetricTrack(metrics = metrics)
         }
@@ -218,14 +239,15 @@ private fun WorkloadToggle(
 ) {
     Column(modifier = Modifier.testTag("startup-workload")) {
         Surface(
-            onClick = onClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .sizeIn(minHeight = 48.dp)
                 .testTag("startup-workload-${workload.id.name.lowercase().replace('_', '-')}")
-                .semantics {
-                    stateDescription = if (enabled) "Enabled" else "Disabled"
-                },
+                .toggleable(
+                    value = enabled,
+                    role = Role.Switch,
+                    onValueChange = { onClick() },
+                ),
             shape = MaterialTheme.shapes.medium,
             color = if (enabled) {
                 MaterialTheme.colorScheme.primaryContainer
@@ -261,6 +283,7 @@ private fun WorkloadToggle(
                 Switch(
                     checked = enabled,
                     onCheckedChange = null,
+                    modifier = Modifier.clearAndSetSemantics { },
                 )
             }
         }
@@ -270,7 +293,11 @@ private fun WorkloadToggle(
 @Composable
 private fun ComparisonCard(comparison: StartupComparison) {
     Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics {
+                liveRegion = LiveRegionMode.Polite
+            },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,

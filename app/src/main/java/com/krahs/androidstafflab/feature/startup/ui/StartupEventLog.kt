@@ -16,7 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -87,7 +89,7 @@ fun StartupEventLog(
         Spacer(modifier = Modifier.height(12.dp))
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             rows.forEachIndexed { index, row ->
-                StartupEventRecordRow(index = index, row = row)
+                StartupEventRecordRow(index = index, total = rows.size, row = row)
             }
         }
     }
@@ -96,13 +98,22 @@ fun StartupEventLog(
 @Composable
 private fun StartupEventRecordRow(
     index: Int,
+    total: Int,
     row: StartupEventRow,
     modifier: Modifier = Modifier,
 ) {
+    val useLargeTextLayout = LocalDensity.current.fontScale >= 1.5f
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .testTag("startup-event-record"),
+            .testTag("startup-event-record")
+            .semantics(mergeDescendants = true) {
+                contentDescription = buildString {
+                    append("Event ${index + 1} of $total, ${row.kind.label}, ")
+                    append("PID ${row.processId}, thread ${row.threadName}, ")
+                    append(row.relativeNanos.asMillisecondsLabel())
+                }
+            },
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = 2.dp,
@@ -137,13 +148,8 @@ private fun StartupEventRecordRow(
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.bodyLarge,
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
+                if (useLargeTextLayout) {
                     Text(
-                        modifier = Modifier.weight(1f),
                         text = "PID ${row.processId} · ${row.threadName}",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelSmall,
@@ -153,6 +159,24 @@ private fun StartupEventRecordRow(
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.labelLarge,
                     )
+                } else {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = "PID ${row.processId} · ${row.threadName}",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelSmall,
+                        )
+                        Text(
+                            text = row.relativeNanos.asMillisecondsLabel(),
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.labelLarge,
+                        )
+                    }
                 }
             }
         }

@@ -39,8 +39,8 @@ fun TopicLibraryScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .safeDrawingPadding()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 18.dp),
     ) {
         LibraryHeader()
